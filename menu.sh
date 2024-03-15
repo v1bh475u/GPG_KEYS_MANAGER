@@ -13,6 +13,7 @@ menu(){
     echo "4. Remove a GPG key" ;
     echo "0. Exit" ;
     read -p "ENTER YOUR CHOICE: " choice ;
+    clear
     if [ $choice -eq 1 ]
     then
         gpg --full-generate-key
@@ -28,8 +29,9 @@ menu(){
         done
         read k
         key=($( gpg --list-secret-keys --keyid-format=long | awk '/sec/{if (length($2)>0) print $2}'|awk -F '/' '{print $2}'))  
-        git config --global user.signingkey $gitkey
+        git config --global user.signingkey ${key[$k]}
         git config --global commit.gpgsign true
+        echo "Key Set!" 
     elif [ $choice -eq 4 ]
     then
         uid=($(gpg --list-secret-keys --keyid-format=long| awk '/uid/{print $3}'))
@@ -38,10 +40,13 @@ menu(){
         done
         echo "Which key do you want to remove? (Indexing starting from 0)"
         read k
-        read -p "ENTER THE KEY ID OF THE KEY TO REMOVE: " keyid 
-        gpg --delete-key $keyid
+        key=($( gpg --list-secret-keys --keyid-format=long | awk '/sec/{if (length($2)>0) print $2}'|awk -F '/' '{print $2}')) 
+        gpg --delete-secret-key ${key[$k]}
+        gpg --delete-key ${key[$k]}
+        echo "Key Deleted!"
     elif [ $choice -eq 0 ]
     then
+        figlet "You know the rules and so do I! Say Goodbye..." -cf slant | lolcat
         exit
     else
         echo "INVALID CHOICE"
