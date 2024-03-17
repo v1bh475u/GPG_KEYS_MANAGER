@@ -31,7 +31,9 @@ menu(){
         key=($( gpg --list-secret-keys --keyid-format=long | awk '/sec/{if (length($2)>0) print $2}'|awk -F '/' '{print $2}'))  
         git config --global user.signingkey ${key[$k]}
         git config --global commit.gpgsign true
-        echo "Key Set!" 
+        echo "Key Set!"
+        echo -e "Please use the below key to add it to your github account...\n"
+        gpg --armor --export ${key[$k]} 
     elif [ $choice -eq 4 ]
     then
         uid=($(gpg --list-secret-keys --keyid-format=long| awk '/uid/{print $3}'))
